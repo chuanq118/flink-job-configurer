@@ -1,0 +1,4 @@
+
+spring:
+  application:
+    name: Flink-Job-Scheduler(DEV)

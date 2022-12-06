@@ -1,0 +1,24 @@
+<Configuration>
+    <Properties>
+        <Property name="STD_PAT">%d{yyyy-MM-dd HH:mm:ss} [%thread] %C{1.}\n-> %-5level | %msg%n</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="${STD_PAT}">
+                <MarkerPatternSelector defaultPattern="${STD_PAT}">
+                    <PatternMatch key="PLAIN" pattern="%-5level| %msg%n"/>
+                </MarkerPatternSelector>
+            </PatternLayout>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <!-- <logger name="org.springframework.boot" level="warning" additivity="false"> -->
+        <!--     <AppenderRef ref="STDOUT"/> -->
+        <!-- </logger> -->
+        <Root level="info">
+            <AppenderRef ref="STDOUT"/>
+        </Root>
+    </Loggers>
+</Configuration>

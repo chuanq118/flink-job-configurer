@@ -1,0 +1,8 @@
+
+spring:
+  application:
+    name: Flink-Job-Scheduler
+
+  profiles:
+    default: none
+    active: dev
