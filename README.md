@@ -1,6 +1,9 @@
 ## Flink Job
 > 读取配置文件启动 flink 任务
 
+### Parallel to IOC
+核心执行类独立于 Spring 容器.可随时去除 Spring 依赖.
+
 ### 配置
 ```json5
 {
