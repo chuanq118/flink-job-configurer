@@ -2,6 +2,7 @@ package cn.lqs.flink.job_scheduler;
 
 
 import cn.lqs.flink.job_scheduler.core.FlinkRuntimeContext;
+import cn.lqs.flink.job_scheduler.core.exception.FailedParseJsonException;
 import cn.lqs.flink.job_scheduler.infrastruction.util.FileUtils;
 import cn.lqs.flink.job_scheduler.infrastruction.util.ParameterUtil;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -55,6 +56,9 @@ public class JobSchedulerApplication implements CommandLineRunner {
 
 
     public void createFlinkExecEnvAndRun(String jsonPath) throws IOException {
+        if (jsonPath == null) {
+            throw new FailedParseJsonException("未找到 JSON 配置文件路径.");
+        }
         // assume json file in local file system
         String jsonCfg = FileUtils.readFileToString(Path.of(jsonPath).toFile());
         // 创建应用配置 CONTEXT

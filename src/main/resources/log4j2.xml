@@ -14,10 +14,10 @@
     </Appenders>
 
     <Loggers>
-        <!-- <logger name="org.springframework.boot" level="warning" additivity="false"> -->
-        <!--     <AppenderRef ref="STDOUT"/> -->
-        <!-- </logger> -->
-        <Root level="info">
+        <logger name="org.springframework" level="WARNING" additivity="true">
+            <AppenderRef ref="STDOUT"/>
+        </logger>
+        <Root level="INFO">
             <AppenderRef ref="STDOUT"/>
         </Root>
     </Loggers>

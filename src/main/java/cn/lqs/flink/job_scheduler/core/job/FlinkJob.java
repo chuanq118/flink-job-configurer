@@ -1,10 +1,10 @@
 package cn.lqs.flink.job_scheduler.core.job;
 
+import com.alibaba.fastjson2.annotation.JSONField;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.util.List;
@@ -25,6 +25,6 @@ public class FlinkJob implements Serializable {
     // TODO parse setting to entity.
     private Map<String, Object> settings;
 
-    @JsonProperty("data-stream")
+    @JSONField(name = "data-stream")
     private List<DataStream> dataStreams;
 }
