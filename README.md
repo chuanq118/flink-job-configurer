@@ -1,5 +1,11 @@
 ## Flink Job
-> 读取配置文件启动 flink 任务
+> 读取配置文件启动 flink 任务  
+> 使用 Spring IOC
+
+### FlinkRuntimeContext
+1. 读取配置文件
+2. 遍历并尝试配置每个 job
+
 
 ### 配置
 ```json5

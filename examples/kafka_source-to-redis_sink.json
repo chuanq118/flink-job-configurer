@@ -1,0 +1,29 @@
+{
+  "name": "kafka-to-redis",
+  "settings": {
+    // TODO 配置
+  },
+  "data_stream": [
+    {
+      "source": {
+        "type": "kafka",
+        "name": "remote-kafka-server-source",
+        "topic": [
+          "lqs-test"
+        ],
+        "props": {
+          "bootstrap.servers": "81.68.224.21:10092"
+        }
+      },
+      "sink": {
+        "type": "redis",
+        "name": "remote-redis-server-sink",
+        "props": {
+
+        }
+      },
+      // 自定义的处理函数
+      "process_wrapper": "cn.lqs.flink.job_scheduler.kafka.KafkaToRedisProcessFuncDemo"
+    }
+  ]
+}

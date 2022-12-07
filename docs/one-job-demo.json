@@ -23,32 +23,32 @@
     }
   },
   // 数据流 Source -> Sink. 可以启动多个
-  "data-stream": [
+  "data_stream": [
     {
       "source": {
-        "type": "kafka",
         // 枚举值 KAFKA,REDIS,MYSQL ...
-        "name": "kafka-source-demo",
+        "type": "kafka",
         // 自定义 source function 名称
+        "name": "kafka-source-demo",
+        // 此 key 仅在 type=kafka 下有效
         "topic": [
           "aaa",
           "bbb"
         ],
-        // 此 key 仅在 type=kafka 下有效
         // 连接的 properties
         "props": {
           "bootstrap.servers": "localhost:9092"
         }
       },
       "sink": {
+        "type": "",
+        "name": "",
+        "props": {
+
+        }
       },
       // 自定义的处理函数
-      "process": [
-        {
-          "order": 6,
-          "function": "cn.lqs.flink.job_scheduler.core.process.LogProcessFunc"
-        }
-      ]
+      "process_wrapper": "cn.lqs.flink.job_scheduler.kafka.KafkaDataProcessFunc"
     }
   ]
 }

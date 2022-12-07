@@ -12,7 +12,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import sun.misc.Unsafe;
 
-import java.io.IOException;
+import javax.annotation.Resource;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 
@@ -39,6 +39,9 @@ public class JobSchedulerApplication implements CommandLineRunner {
         }
     }
 
+    @Resource
+    private FlinkRuntimeContext flinkRuntimeContext;
+
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(JobSchedulerApplication.class);
         app.setBannerMode(Banner.Mode.OFF);
@@ -55,15 +58,16 @@ public class JobSchedulerApplication implements CommandLineRunner {
     }
 
 
-    public void createFlinkExecEnvAndRun(String jsonPath) throws IOException {
+    public void createFlinkExecEnvAndRun(String jsonPath) throws Exception {
         if (jsonPath == null) {
             throw new FailedParseJsonException("未找到 JSON 配置文件路径.");
         }
         // assume json file in local file system
         String jsonCfg = FileUtils.readFileToString(Path.of(jsonPath).toFile());
-        // 创建应用配置 CONTEXT
-        FlinkRuntimeContext context = FlinkRuntimeContext.create(jsonCfg);
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        context.setExecutionEnvironment(env).run();
+        // 创建应用配置 CONTEXT
+        flinkRuntimeContext.initFromJsonCfg(jsonCfg)
+                .setExecutionEnvironment(env)
+                .run();
     }
 }

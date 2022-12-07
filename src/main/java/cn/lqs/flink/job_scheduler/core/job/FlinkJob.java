@@ -25,6 +25,6 @@ public class FlinkJob implements Serializable {
     // TODO parse setting to entity.
     private Map<String, Object> settings;
 
-    @JSONField(name = "data-stream")
+    @JSONField(name = "data_stream")
     private List<DataStream> dataStreams;
 }

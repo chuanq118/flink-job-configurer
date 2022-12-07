@@ -1,6 +1,7 @@
 package cn.lqs.flink.job_scheduler.core;
 
 /**
+ * 核心常量类
  * @author @lqs
  */
 public final class DataSTypes {
