@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -30,6 +29,7 @@ import static cn.lqs.flink.job_scheduler.core.DataSTypes.KAFKA;
 import static cn.lqs.flink.job_scheduler.core.DataSTypes.SOURCE_CONFIGURER_POSTFIX;
 
 /**
+ * 整个 Flink 任务执行的核心处理类.
  * @author @lqs
  */
 @Slf4j
@@ -39,14 +39,14 @@ public final class FlinkRuntimeContext implements ApplicationContextAware {
     private StreamExecutionEnvironment env;
     private boolean isInit = false;
 
-    private List<FlinkJob> jobs;
+    private FlinkJob job;
     private ApplicationContext springCtx;
 
     @Autowired
     private FlinkRuntimeContext(){}
 
-    public List<FlinkJob> getJobs() {
-        return jobs;
+    public FlinkJob getJob() {
+        return this.job;
     }
 
     /**
@@ -58,29 +58,21 @@ public final class FlinkRuntimeContext implements ApplicationContextAware {
         json = json.trim();
         Object config = JSON.parse(json);
         if (config instanceof JSONArray) {
-            // 多个任务
-            this.jobs = ((JSONArray) config).toJavaList(FlinkJob.class);
-            configureJobsName(this.jobs);
-            log.info("读取到[{}]个任务.", this.jobs.size());
-            isInit = true;
-            return this;
+            throw new FailedParseJsonException("解析 JSON 文件错误. 不支持同时配置多个任务(无法配置多个运行环境).");
         }
         if (config instanceof JSONObject) {
-            // 单个任务, 注意此处使用 Unmodifiable List 包裹
-            this.jobs = List.of(((JSONObject) config).to(FlinkJob.class));
-            configureJobsName(this.jobs);
-            log.info("读取到单个 flink 任务. [{}]", this.jobs.get(0).getName());
+            this.job = ((JSONObject) config).to(FlinkJob.class);
+            configureJobsName(this.job);
+            log.info("读取到 flink 任务. [{}]", this.job.getName());
             isInit = true;
             return this;
         }
         throw new FailedParseJsonException("无法正确解析 JSON 配置文件.");
     }
 
-    private void configureJobsName(List<FlinkJob> jobs) {
-        for (FlinkJob job : jobs) {
-            if (!StringUtils.hasText(job.getName())) {
-                job.setName(DateUtil.nowDatetimeNumberString() + "_" + UUID.randomUUID().toString().split("-")[0]);
-            }
+    private void configureJobsName(FlinkJob job) {
+        if (!StringUtils.hasText(job.getName())) {
+            job.setName(DateUtil.nowDatetimeNumberString() + "_" + UUID.randomUUID().toString().split("-")[0]);
         }
     }
 
@@ -108,24 +100,23 @@ public final class FlinkRuntimeContext implements ApplicationContextAware {
             log.error("无法在环境未完成装配的情况下启动.");
             return;
         }
-        for (FlinkJob job : jobs) {
-            log.info("##### 执行启动任务[{}] #####", job.getName());
-            configureEnv(job);
-            for (DataStream dataStream : job.getDataStreams()) {
-                try {
-                    // 配置 Source
-                    DataStreamSourceWrapper<?> sourceWrapper = configureSource(dataStream.getSource());
-                    // 配置 process function
-                    DataStreamSinkWrapper<?> sinkWrapper = configureProcessFunc(dataStream.getProcessWrapperFunc(), sourceWrapper);
-                    // 配置 Sink
-                    // configureSink(dataStream.getSink());
-                } catch (UnSupportSourceTypeException e) {
-                    log.error("配置 flink 任务发生错误", e);
-                    // 当前的 Source -> Sink 将不会执行
-                }
+        // TODO FIX One Job -> One Env
+        log.info("##### 执行启动任务[{}] #####", this.job.getName());
+        configureEnv(this.job);
+        for (DataStream dataStream : this.job.getDataStreams()) {
+            try {
+                // 配置 Source
+                DataStreamSourceWrapper<?> sourceWrapper = configureSource(dataStream.getSource());
+                // 配置 process function
+                DataStreamSinkWrapper<?> sinkWrapper = configureProcessFunc(dataStream.getProcessWrapperFunc(), sourceWrapper);
+                // 配置 Sink
+                // configureSink(dataStream.getSink());
+            } catch (UnSupportSourceTypeException e) {
+                log.error("配置 flink 任务发生错误", e);
+                // 当前的 Source -> Sink 将不会执行
             }
-            this.env.execute(job.getName());
         }
+        this.env.execute(job.getName());
     }
 
     /**

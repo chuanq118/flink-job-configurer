@@ -22,7 +22,6 @@
 
         }
       },
-      // 自定义的处理函数
       "process_wrapper": "cn.lqs.flink.job_scheduler.kafka.KafkaToRedisProcessFuncDemo"
     }
   ]
