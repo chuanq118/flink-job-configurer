@@ -31,7 +31,7 @@ public class JsonTests {
     }
 
     @Test void parseJson() throws IOException {
-        String json = FileUtils.readFileToString(new File("D:\\Java\\flink\\job-scheduler\\docs\\one-job-demo.json"));
+        String json = FileUtils.readFileToString(new File("D:\\Java\\flink\\job-scheduler\\docs\\job-config-example.json"));
         System.out.println(JSON.parse(json) instanceof JSONArray);
         System.out.println(JSON.parse(json) instanceof JSONObject);
     }

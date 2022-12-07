@@ -9,17 +9,20 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>cn.lqs.flink</groupId>
-    <artifactId>job-scheduler</artifactId>
+    <artifactId>job-configurer</artifactId>
     <version>1.0</version>
-    <name>job-scheduler</name>
-    <description>job-scheduler</description>
+    <name>job-configurer</name>
+    <description>job-configurer</description>
 
 
     <properties>
         <java.version>11</java.version>
+
+        <fastjson2.version>2.0.20</fastjson2.version>
+
         <flink.version>1.13.6</flink.version>
         <flink.scala.version>2.12</flink.scala.version>
-        <fastjson2.version>2.0.20</fastjson2.version>
+        <flink.redis.version>1.1.0</flink.redis.version>
     </properties>
 
 
@@ -100,11 +103,23 @@
             <artifactId>flink-connector-base</artifactId>
             <version>${flink.version}</version>
         </dependency>
-        <!-- flink-kafka -->
+
+        <!-- ##########################################
+                        Fink Kafka Connector
+             ##########################################  -->
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-kafka_${flink.scala.version}</artifactId>
             <version>${flink.version}</version>
+        </dependency>
+
+        <!-- ##########################################
+                        Fink Redis Connector
+             ##########################################  -->
+        <dependency>
+            <groupId>org.apache.bahir</groupId>
+            <artifactId>flink-connector-redis_${flink.scala.version}</artifactId>
+            <version>${flink.redis.version}</version>
         </dependency>
 
     </dependencies>

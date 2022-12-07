@@ -12,22 +12,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import static cn.lqs.flink.job_scheduler.core.DataSTypes.KAFKA;
 import static cn.lqs.flink.job_scheduler.core.DataSTypes.SOURCE_CONFIGURER_POSTFIX;
+import static cn.lqs.flink.job_scheduler.core.job.SourceSinkCfgNames.PROPERTY;
 
 /**
  * 此类包含了配置 kafka 作为 source 的核心逻辑.<br>
  * 假定接受的数据类型为 String 因此采用了固定的序列化方式.
  * @author @lqs
  */
-@Component(KAFKA + SOURCE_CONFIGURER_POSTFIX)
-public class KafkaSourceConfigurer implements SourceConfigurer {
+@Component("kafka-as-string" + SOURCE_CONFIGURER_POSTFIX)
+public class KafkaSourceAsStringConfigurer implements SourceConfigurer {
+
+    private final static String KAFKA_TOPIC_NAME = "topic";
 
     @Override
     public DataStreamSourceWrapper<String> configure(StreamExecutionEnvironment env, JSONObject cfg) {
-        List<String> topics = cfg.getJSONArray("topic").toJavaList(String.class);
+        List<String> topics = cfg.getJSONArray(KAFKA_TOPIC_NAME).toJavaList(String.class);
         Properties properties = new Properties();
-        properties.putAll(cfg.getJSONObject("props").toJavaObject(Map.class));
+        properties.putAll(cfg.getJSONObject(PROPERTY).toJavaObject(Map.class));
         return new DataStreamSourceWrapper<String>(
                 env.addSource(new FlinkKafkaConsumer<>(topics, new SimpleStringSchema(), properties)),
                 String.class);

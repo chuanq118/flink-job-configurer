@@ -1,13 +1,13 @@
 {
   "name": "kafka-to-redis",
   "settings": {
-    // TODO 配置
   },
   "data_stream": [
     {
       "source": {
         "type": "kafka",
         "name": "remote-kafka-server-source",
+        "configurer": "kafka-as-string",
         "topic": [
           "lqs-test"
         ],
@@ -18,11 +18,19 @@
       "sink": {
         "type": "redis",
         "name": "remote-redis-server-sink",
+        "configurer": "redis-string-kv",
         "props": {
-
+          "host": "81.68.224.21",
+          "port": "10091",
+          "require_password": true,
+          "password": "lqservice.cn",
+          "db": 0,
+          "timeout": 5000,
+          "min-conn": 1,
+          "max-conn": 1
         }
       },
-      "process_wrapper": "cn.lqs.flink.job_scheduler.kafka.KafkaToRedisProcessFuncDemo"
+      "process_wrapper": "cn.lqs.flink.job_scheduler.wrapper_functions.KafkaStringToRedisStringFuncWrapper"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
-  "name": "demo",
   // 自定义任务名称
+  "name": "demo",
   "settings": {
     "speed": {
       "channel": 1,
@@ -27,28 +27,30 @@
     {
       "source": {
         // 枚举值 KAFKA,REDIS,MYSQL ...
-        "type": "kafka",
+        "type": "",
         // 自定义 source function 名称
-        "name": "kafka-source-demo",
-        // 此 key 仅在 type=kafka 下有效
-        "topic": [
-          "aaa",
-          "bbb"
-        ],
+        "name": "",
+        // 配置类名称
+        "configurer": "",
         // 连接的 properties
         "props": {
           "bootstrap.servers": "localhost:9092"
         }
       },
       "sink": {
+        // 同 source.type
         "type": "",
+        // 自定义名称
         "name": "",
+        // 配置类名称
+        "configurer": "",
+        // 参考配置属性
         "props": {
-
+          "key": "value"
         }
       },
       // 自定义的处理函数
-      "process_wrapper": "cn.lqs.flink.job_scheduler.kafka.KafkaDataProcessFunc"
+      "process_wrapper": "full class name to wrapper function."
     }
   ]
 }

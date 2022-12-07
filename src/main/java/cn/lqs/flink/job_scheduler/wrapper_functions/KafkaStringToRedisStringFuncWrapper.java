@@ -1,5 +1,4 @@
-package cn.lqs.flink.job_scheduler.kafka;
-
+package cn.lqs.flink.job_scheduler.wrapper_functions;
 
 import cn.lqs.flink.job_scheduler.core.job.DataStreamSourceWrapper;
 import cn.lqs.flink.job_scheduler.core.process.ProcessFunctionWrapper;
@@ -9,13 +8,9 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import java.util.Locale;
 
 /**
- * 此类仅仅作为一个参考, 包装了 Source -> Sink 的处理逻辑. <br>
- * 通过定义不同的实现类, 并在配置文件中进行声明, 来执行不同的处理逻辑.
  * @author @lqs
  */
-public class KafkaDataProcessFunc implements ProcessFunctionWrapper<String, String> {
-
-
+public class KafkaStringToRedisStringFuncWrapper implements ProcessFunctionWrapper<String, String> {
     @Override
     public DataStream<String> process(DataStreamSourceWrapper<String> dsWp) {
         // 将数据加上一个时间前缀后返回
@@ -35,5 +30,4 @@ public class KafkaDataProcessFunc implements ProcessFunctionWrapper<String, Stri
     public Class<String> getInputCls() {
         return String.class;
     }
-
 }

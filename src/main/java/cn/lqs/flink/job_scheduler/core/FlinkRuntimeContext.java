@@ -1,11 +1,9 @@
 package cn.lqs.flink.job_scheduler.core;
 
 import cn.lqs.flink.job_scheduler.core.exception.FailedParseJsonException;
+import cn.lqs.flink.job_scheduler.core.exception.UnSupportSinkTypeException;
 import cn.lqs.flink.job_scheduler.core.exception.UnSupportSourceTypeException;
-import cn.lqs.flink.job_scheduler.core.job.DataStream;
-import cn.lqs.flink.job_scheduler.core.job.DataStreamSinkWrapper;
-import cn.lqs.flink.job_scheduler.core.job.DataStreamSourceWrapper;
-import cn.lqs.flink.job_scheduler.core.job.FlinkJob;
+import cn.lqs.flink.job_scheduler.core.job.*;
 import cn.lqs.flink.job_scheduler.core.process.ProcessFunctionWrapper;
 import cn.lqs.flink.job_scheduler.infrastruction.util.DateUtil;
 import com.alibaba.fastjson2.JSON;
@@ -25,8 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 import java.util.UUID;
 
-import static cn.lqs.flink.job_scheduler.core.DataSTypes.KAFKA;
-import static cn.lqs.flink.job_scheduler.core.DataSTypes.SOURCE_CONFIGURER_POSTFIX;
+import static cn.lqs.flink.job_scheduler.core.DataSTypes.*;
 
 /**
  * 整个 Flink 任务执行的核心处理类.
@@ -110,8 +107,8 @@ public final class FlinkRuntimeContext implements ApplicationContextAware {
                 // 配置 process function
                 DataStreamSinkWrapper<?> sinkWrapper = configureProcessFunc(dataStream.getProcessWrapperFunc(), sourceWrapper);
                 // 配置 Sink
-                // configureSink(dataStream.getSink());
-            } catch (UnSupportSourceTypeException e) {
+                configureSink(dataStream.getSink(), sinkWrapper);
+            } catch (UnSupportSourceTypeException|UnSupportSinkTypeException e) {
                 log.error("配置 flink 任务发生错误", e);
                 // 当前的 Source -> Sink 将不会执行
             }
@@ -126,11 +123,12 @@ public final class FlinkRuntimeContext implements ApplicationContextAware {
      * @throws UnSupportSourceTypeException 如果配置了不支持的 source.那么该 data-stream 就停止配置. <br> 如果 job 有多个 ds, 那么下一个 ds 配置不会因此取消.
      */
     private DataStreamSourceWrapper<?> configureSource(JSONObject source) throws UnSupportSourceTypeException {
-        String type = source.getString("type").toLowerCase(Locale.ROOT);
+        String type = source.getString(SourceSinkCfgNames.TYPE).toLowerCase(Locale.ROOT);
         switch (type) {
             case KAFKA:
-                log.info("配置 Kafka Source.");
-                return this.springCtx.getBean(KAFKA + SOURCE_CONFIGURER_POSTFIX, SourceConfigurer.class).configure(this.env, source);
+                final String bn = source.getString(SourceSinkCfgNames.CONFIGURER).trim() + SOURCE_CONFIGURER_POSTFIX;
+                log.info("配置 Kafka Source. 使用 bean [{}]", bn);
+                return this.springCtx.getBean(bn, SourceConfigurer.class).configure(this.env, source);
                 // TODO 配置更多数据源
         }
         throw new UnSupportSourceTypeException(type);
@@ -157,8 +155,17 @@ public final class FlinkRuntimeContext implements ApplicationContextAware {
         return new DataStreamSinkWrapper<>(func.process(dsWp), func.getOutCls());
     }
 
-    private void configureSink(JSONObject sink, DataStreamSinkWrapper<?> sinkWrapper) {
+
+    private void configureSink(JSONObject sink, DataStreamSinkWrapper<?> sinkWrapper) throws UnSupportSinkTypeException {
         // TODO FINISH Sink Code
+        String type = sink.getString(SourceSinkCfgNames.TYPE).toLowerCase(Locale.ROOT);
+        switch (type) {
+            case REDIS:
+                log.info("配置 Redis Sink.");
+                // sinkWrapper.getDataStream().addSink()
+                return;
+        }
+        throw new UnSupportSinkTypeException(type);
     }
 
 
