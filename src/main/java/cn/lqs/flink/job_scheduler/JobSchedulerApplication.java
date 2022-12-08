@@ -17,10 +17,7 @@ import java.lang.reflect.Field;
 import java.nio.file.Path;
 
 /**
- * Flink 相关依赖被置为 provided. 同理其依赖的工具包同为 provided.<br>
- * 不能保证因版本问题最终运行环境中确实会有此相关依赖. <br>
- * 为防止找不到类,应该避免使用 provided 包下的相关类. <br>
- *   例如: org.apache.commons.io.FileUtils
+ * 指定程序运行实参 -config @path/to/cfg.json
  */
 @SpringBootApplication
 public class JobSchedulerApplication implements CommandLineRunner {
@@ -60,7 +57,7 @@ public class JobSchedulerApplication implements CommandLineRunner {
 
     public void createFlinkExecEnvAndRun(String jsonPath) throws Exception {
         if (jsonPath == null) {
-            throw new FailedParseJsonException("未找到 JSON 配置文件路径.");
+            throw new FailedParseJsonException("###### 未找到 JSON 配置文件路径. ######");
         }
         // assume json file in local file system
         String jsonCfg = FileUtils.readFileToString(Path.of(jsonPath).toFile());
