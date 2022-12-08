@@ -2,6 +2,7 @@ package cn.lqs.flink.job_scheduler.kafka;
 
 import cn.lqs.flink.job_scheduler.core.SourceConfigurer;
 import cn.lqs.flink.job_scheduler.core.job.DataStreamSourceWrapper;
+import cn.lqs.flink.job_scheduler.core.job.SourceSinkCfgNames;
 import com.alibaba.fastjson2.JSONObject;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -27,11 +28,16 @@ public class KafkaSourceAsStringConfigurer implements SourceConfigurer {
 
     @Override
     public DataStreamSourceWrapper<String> configure(StreamExecutionEnvironment env, JSONObject cfg) {
+        // 读取 topic 列表
         List<String> topics = cfg.getJSONArray(KAFKA_TOPIC_NAME).toJavaList(String.class);
+        // 读取定义 source name
+        String sourceName = cfg.getString(SourceSinkCfgNames.NAME);
+        // 读取 kafka 的 props
         Properties properties = new Properties();
         properties.putAll(cfg.getJSONObject(PROPERTY).toJavaObject(Map.class));
+        // 自定义配置 source 并且返回一个 source wrapper
         return new DataStreamSourceWrapper<String>(
-                env.addSource(new FlinkKafkaConsumer<>(topics, new SimpleStringSchema(), properties)),
+                env.addSource(new FlinkKafkaConsumer<>(topics, new SimpleStringSchema(), properties), sourceName),
                 String.class);
     }
 

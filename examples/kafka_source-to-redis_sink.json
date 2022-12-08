@@ -12,7 +12,7 @@
           "lqs-test"
         ],
         "props": {
-          "bootstrap.servers": "81.68.224.21:10092"
+          "bootstrap.servers": ""
         }
       },
       "sink": {
@@ -20,10 +20,10 @@
         "name": "remote-redis-server-sink",
         "configurer": "redis-string-kv",
         "props": {
-          "host": "81.68.224.21",
-          "port": "10091",
+          "host": "",
+          "port": "",
           "require_password": true,
-          "password": "lqservice.cn",
+          "password": "",
           "db": 0,
           "timeout": 5000,
           "min-conn": 1,
